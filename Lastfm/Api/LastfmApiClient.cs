@@ -45,7 +45,7 @@
             {
                 Track      = item.Name,
                 Album      = item.Album,
-                Artist     = item.Artists.First(),
+                Artist     = item.Artists.FirstOrDefault(),
                 Timestamp  = Helpers.CurrentTimestamp(),
 
                 ApiKey     = Strings.Keys.LastfmApiKey,
@@ -78,7 +78,7 @@
             {
                 Track  = item.Name,
                 Album  = item.Album,
-                Artist = item.Artists.First(),
+                Artist = item.Artists.FirstOrDefault(),
 
                 ApiKey = Strings.Keys.LastfmApiKey,
                 Method = Strings.Methods.NowPlaying,
@@ -118,7 +118,7 @@
         {
             var request = new TrackLoveRequest
             {
-                Artist = item.Artists.First(),
+                Artist = item.Artists.FirstOrDefault(),
                 Track  = item.Name,
 
                 ApiKey     = Strings.Keys.LastfmApiKey,
