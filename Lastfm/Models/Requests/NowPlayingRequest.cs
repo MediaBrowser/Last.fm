@@ -10,6 +10,7 @@
         public string Album    { get; set; }
         public string Artist   { get; set; }
         public int    Duration { get; set; }
+        public string MbId     { get; set; }
 
         public override Dictionary<string, string> ToDictionary()
         {
@@ -18,7 +19,8 @@
                 { "track",    Track  },
                 { "album",    Album  },
                 { "artist",   Artist },
-                { "duration", Duration.ToString() }
+                { "duration", Duration.ToString() },
+                { "mbid",     MbId }
             };
         }
     }

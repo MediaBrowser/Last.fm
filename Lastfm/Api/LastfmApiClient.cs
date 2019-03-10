@@ -44,7 +44,6 @@
             var request = new ScrobbleRequest
             {
                 Track      = item.Name,
-                Album      = item.Album,
                 Artist     = item.Artists.FirstOrDefault(),
                 Timestamp  = Helpers.CurrentTimestamp(),
 
@@ -52,6 +51,12 @@
                 Method     = Strings.Methods.Scrobble,
                 SessionKey = user.SessionKey
             };
+
+            if (!string.IsNullOrWhiteSpace(item.Album))
+                request.Album = item.Album;
+
+            if (item.ProviderIds.ContainsKey("MusicBrainzTrack")) 
+                request.MbId = item.ProviderIds["MusicBrainzTrack"];
 
             try
             {
@@ -77,13 +82,18 @@
             var request = new NowPlayingRequest
             {
                 Track  = item.Name,
-                Album  = item.Album,
                 Artist = item.Artists.FirstOrDefault(),
 
                 ApiKey = Strings.Keys.LastfmApiKey,
                 Method = Strings.Methods.NowPlaying,
                 SessionKey = user.SessionKey
             };
+
+            if (!string.IsNullOrWhiteSpace(item.Album)) 
+                request.Album = item.Album;
+
+            if (item.ProviderIds.ContainsKey("MusicBrainzTrack"))
+                request.MbId = item.ProviderIds["MusicBrainzTrack"];
 
             //Add duration
             if (item.RunTimeTicks != null)
