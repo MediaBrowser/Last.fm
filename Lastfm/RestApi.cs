@@ -8,9 +8,7 @@
     [Route("/Lastfm/Login", "POST")]
     public class Login
     {
-        [ApiMember(Name = "Username", IsRequired = false, DataType = "string", ParameterType = "query", Verb = "POST")]
         public string Username { get; set; }
-        [ApiMember(Name = "Password", IsRequired = false, DataType = "string", ParameterType = "query", Verb = "POST")]
         public string Password { get; set; }
     }
 

@@ -147,6 +147,18 @@
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(item.Name))
+            {
+                Plugin.Logger.Info("No title present, aborting");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Artists.FirstOrDefault()))
+            {
+                Plugin.Logger.Info("No artist present, aborting");
+                return;
+            }
+
             await _apiClient.Scrobble(item, lastfmUser).ConfigureAwait(false);
         }
 
@@ -186,6 +198,19 @@
             }
 
             var item = e.Item as Audio;
+
+            if (string.IsNullOrWhiteSpace(item.Name))
+            {
+                Plugin.Logger.Info("No title present, aborting");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Artists.FirstOrDefault()))
+            {
+                Plugin.Logger.Info("No artist present, aborting");
+                return;
+            }
+
             await _apiClient.NowPlaying(item, lastfmUser).ConfigureAwait(false);
         }
 
