@@ -14,14 +14,17 @@
 
         public override Dictionary<string, string> ToDictionary()
         {
-            return new Dictionary<string, string>(base.ToDictionary()) 
+            var dict = new Dictionary<string, string>(base.ToDictionary()) 
             {   
                 { "track",    Track  },
-                { "album",    Album  },
                 { "artist",   Artist },
-                { "duration", Duration.ToString() },
-                { "mbid",     MbId }
+                { "duration", Duration.ToString() }
             };
+            if (!string.IsNullOrWhiteSpace(Album))
+                dict.Add("album", Album);
+            if (!string.IsNullOrWhiteSpace(MbId))
+                dict.Add("mbid", MbId);
+            return dict;
         }
     }
 }
