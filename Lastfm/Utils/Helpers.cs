@@ -91,5 +91,10 @@
         {
             return tracks.FirstOrDefault(lastfmTrack => StringHelper.IsLike(song.Name, lastfmTrack.Name));
         }
+
+        public static LastfmArtistTrack FindMatchedLastfmSong(List<LastfmArtistTrack> tracks, Audio song)
+        {
+            return tracks.FirstOrDefault(lastfmTrack => StringHelper.IsLike(song.Name, lastfmTrack.Name));
+        }
     }
 }

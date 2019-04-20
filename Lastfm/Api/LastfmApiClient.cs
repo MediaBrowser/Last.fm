@@ -207,5 +207,20 @@
 
             return await Get<GetTracksRequest, GetTracksResponse>(request, cancellationToken);
         }
+
+        public async Task<GetArtistTracksResponse> GetArtistTracks(LastfmUser user, MusicArtist artist,CancellationToken cancellationToken, int page = 0, int limit = 200)
+        {
+            var request = new GetTracksRequest
+            {
+                User = user.Username,
+                Artist = artist.Name,
+                ApiKey = Strings.Keys.LastfmApiKey,
+                Method = Strings.Methods.GetArtistTracks,
+                Limit = limit,
+                Page = page
+            };
+
+            return await Get<GetTracksRequest, GetArtistTracksResponse>(request, cancellationToken);
+        }
     }
 }
