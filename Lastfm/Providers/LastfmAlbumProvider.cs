@@ -108,7 +108,8 @@ namespace Lastfm.Providers
         private async Task<LastfmGetAlbumResult> GetAlbumResult(string artist, string album, CancellationToken cancellationToken)
         {
             // Get albu info using artist and album name
-            var url = LastfmArtistProvider.RootUrl + string.Format("method=album.getInfo&artist={0}&album={1}&api_key={2}&format=json", UrlEncode(artist), UrlEncode(album), LastfmArtistProvider.ApiKey);
+            var lang = _config.Configuration.PreferredMetadataLanguage;
+            var url = LastfmArtistProvider.RootUrl + string.Format("method=album.getInfo&artist={0}&album={1}&api_key={2}&lang={3}&format=json", UrlEncode(artist), UrlEncode(album), LastfmArtistProvider.ApiKey, lang);
 
             using (var json = await _httpClient.Get(new HttpRequestOptions
             {
