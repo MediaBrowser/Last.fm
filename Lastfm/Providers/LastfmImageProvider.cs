@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.Model.Configuration;
 
 namespace Lastfm.Providers
 {
@@ -48,7 +49,7 @@ namespace Lastfm.Providers
             };
         }
 
-        public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
+        public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, LibraryOptions libraryOptions, CancellationToken cancellationToken)
         {
             var list = new List<RemoteImageInfo>();
 
