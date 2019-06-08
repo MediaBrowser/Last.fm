@@ -30,6 +30,10 @@ namespace Lastfm.Providers
 
             if (img != null)
             {
+                if (img.url.Contains("2a96cbd8b46e442fc41c2b86b821562f.png"))
+                {
+                    return null;
+                }
                 size = img.size;
                 return img.url;
             }
