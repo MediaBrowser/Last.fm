@@ -142,11 +142,12 @@
                 Plugin.Logger.Info("Found {0} tracks in last.fm library for {1}", artistTracksList.Count, artist.Name);
 
                 //Loop through each song
-                foreach (var song in artist.GetTaggedMediaItems(new InternalItemsQuery
+                foreach (var song in artist.GetTaggedItemsResult(new InternalItemsQuery
                 {
-                    IncludeItemTypes = new[] { "Audio" }
+                    IncludeItemTypes = new[] { "Audio" },
+                    EnableTotalRecordCount = false
 
-                }).OfType<Audio>().ToList())
+                }).Items.OfType<Audio>().ToList())
                 {
                     totalSongs++;
 
