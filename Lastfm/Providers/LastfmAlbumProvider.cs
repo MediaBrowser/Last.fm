@@ -108,7 +108,7 @@ namespace Lastfm.Providers
         private async Task<LastfmGetAlbumResult> GetAlbumResult(string artist, string album, CancellationToken cancellationToken)
         {
             // Get albu info using artist and album name
-            var lang = _config.Configuration.PreferredMetadataLanguage;
+            var lang = NormalizeLanguage(_config.Configuration.PreferredMetadataLanguage);
             var url = LastfmArtistProvider.RootUrl + string.Format("method=album.getInfo&artist={0}&album={1}&api_key={2}&lang={3}&format=json", UrlEncode(artist), UrlEncode(album), LastfmArtistProvider.ApiKey, lang);
 
             using (var json = await _httpClient.Get(new HttpRequestOptions
@@ -134,7 +134,8 @@ namespace Lastfm.Providers
         private async Task<LastfmGetAlbumResult> GetAlbumResult(string musicbraizId, CancellationToken cancellationToken)
         {
             // Get albu info using artist and album name
-            var url = LastfmArtistProvider.RootUrl + string.Format("method=album.getInfo&mbid={0}&api_key={1}&format=json", UrlEncode(musicbraizId), LastfmArtistProvider.ApiKey);
+            var lang = NormalizeLanguage(_config.Configuration.PreferredMetadataLanguage);
+            var url = LastfmArtistProvider.RootUrl + string.Format("method=album.getInfo&mbid={0}&api_key={1}&lang={2}&format=json", UrlEncode(musicbraizId), LastfmArtistProvider.ApiKey, lang);
 
             using (var json = await _httpClient.Get(new HttpRequestOptions
             {
@@ -187,7 +188,7 @@ namespace Lastfm.Providers
 
             string imageSize;
             var url = LastfmHelper.GetImageUrl(data, out imageSize);
-            
+
             if (!string.IsNullOrEmpty(musicBrainzId) && !string.IsNullOrEmpty(url))
             {
                 LastfmHelper.SaveImageInfo(_config.ApplicationPaths, _logger, musicBrainzId, url, imageSize);
@@ -202,6 +203,16 @@ namespace Lastfm.Providers
         private string UrlEncode(string name)
         {
             return WebUtility.UrlEncode(name);
+        }
+
+        private string NormalizeLanguage(string language)
+        {
+            if (string.IsNullOrEmpty(language))
+            {
+                return language;
+            }
+
+            return language.Split('-')[0].ToLower();
         }
 
         public string Name
