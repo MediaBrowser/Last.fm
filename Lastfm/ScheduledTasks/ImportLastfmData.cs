@@ -113,18 +113,7 @@
             var lovedTracksReponse = await _apiClient.GetLovedTracks(lastFmUser).ConfigureAwait(false);
             var hasLovedTracks = lovedTracksReponse.HasLovedTracks();
 
-            //Get entire library
-            var usersTracks = await GetUsersLibrary(lastFmUser, progress, cancellationToken, maxProgress, progressOffset);
-
-            if (usersTracks.Count == 0)
-            {
-                Plugin.Logger.Info("User {0} has no tracks in last.fm", user.Name);
-                return;
-            }
-
-            //Group the library by artist
-            var userLibrary = usersTracks.GroupBy(t => t.Artist.MusicBrainzId).ToList();
-
+            var trackCount = 0;
             //Loop through each artist
             foreach (var artist in artists)
             {
@@ -136,8 +125,11 @@
                 if (artistMBid == null)
                     continue;
 
+                var allArtistTracks = await GetArtistTracks(lastFmUser, artist, progress, cancellationToken, maxProgress, progressOffset).ConfigureAwait(false);
+
                 //Get the tracks from lastfm for the current artist
-                var artistTracks = userLibrary.FirstOrDefault(t => t.Key.Equals(artistMBid));
+                var artistTracks = allArtistTracks.Where(t => t.Artist.MusicBrainzId.Equals(artistMBid));
+                trackCount += artistTracks.Count();
 
                 if (artistTracks == null || !artistTracks.Any())
                 {
@@ -150,7 +142,12 @@
                 Plugin.Logger.Info("Found {0} tracks in last.fm library for {1}", artistTracksList.Count, artist.Name);
 
                 //Loop through each song
-                foreach (var song in artist.GetRecursiveChildren().OfType<Audio>())
+                foreach (var song in artist.GetTaggedItemsResult(new InternalItemsQuery
+                {
+                    IncludeItemTypes = new[] { "Audio" },
+                    EnableTotalRecordCount = false
+
+                }).Items.OfType<Audio>().ToList())
                 {
                     totalSongs++;
 
@@ -182,7 +179,7 @@
                     }
 
                     //Update the play count
-                    if (matchedSong.PlayCount > 0)
+                    /*if (matchedSong.PlayCount > 0)
                     {
                         userData.Played = true;
                         userData.PlayCount = Math.Max(userData.PlayCount, matchedSong.PlayCount);
@@ -192,7 +189,7 @@
                         userData.Played = false;
                         userData.PlayCount = 0;
                         userData.LastPlayedDate = null;
-                    }
+                    }*/
 
                     _userDataManager.SaveUserData(user.InternalId, song, userData, UserDataSaveReason.UpdateUserRating, cancellationToken);
                 }
@@ -200,7 +197,29 @@
 
             //The percentage might not actually be correct but I'm pretty tired and don't want to think about it
             Plugin.Logger.Info("Finished import Last.fm library for {0}. Local Songs: {1} | Last.fm Songs: {2} | Matched Songs: {3} | {4}% match rate",
-                user.Name, totalSongs, usersTracks.Count, matchedSongs, Math.Round(((double)matchedSongs / Math.Min(usersTracks.Count, totalSongs)) * 100));
+                user.Name, totalSongs, trackCount, matchedSongs, Math.Round(((double)matchedSongs / Math.Min(trackCount, totalSongs)) * 100));
+        }
+
+        private async Task<List<LastfmArtistTrack>> GetArtistTracks(LastfmUser lastfmUser, MusicArtist artist, IProgress<double> progress, CancellationToken cancellationToken, double maxProgress, double progressOffset) {
+            var tracks = new List<LastfmArtistTrack>();
+            var page = 1; //Page 0 = 1
+            bool moreTracks;
+
+            do
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var response = await _apiClient.GetArtistTracks(lastfmUser, artist, cancellationToken, page++).ConfigureAwait(false);
+
+                if (response == null || !response.HasTracks())
+                    break;
+
+                tracks.AddRange(response.ArtistTracks.Tracks);
+
+                moreTracks = !response.ArtistTracks.Metadata.IsLastPage();
+            } while (moreTracks);
+
+            return tracks;
         }
 
         private async Task<List<LastfmTrack>> GetUsersLibrary(LastfmUser lastfmUser, IProgress<double> progress, CancellationToken cancellationToken, double maxProgress, double progressOffset)

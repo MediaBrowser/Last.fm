@@ -64,7 +64,8 @@ namespace Lastfm.Providers
         protected async Task FetchLastfmData(MusicArtist item, string musicBrainzId, CancellationToken cancellationToken)
         {
             // Get artist info with provided id
-            var url = RootUrl + String.Format("method=artist.getInfo&mbid={0}&api_key={1}&format=json", UrlEncode(musicBrainzId), ApiKey);
+            var lang = NormalizeLanguage(_config.Configuration.PreferredMetadataLanguage);
+            var url = RootUrl + String.Format("method=artist.getInfo&mbid={0}&api_key={1}&lang={2}&format=json", UrlEncode(musicBrainzId), ApiKey, lang);
 
             LastfmGetArtistResult result;
 
@@ -134,6 +135,16 @@ namespace Lastfm.Providers
         private string UrlEncode(string name)
         {
             return WebUtility.UrlEncode(name);
+        }
+
+        private string NormalizeLanguage(string language)
+        {
+            if (string.IsNullOrEmpty(language))
+            {
+                return language;
+            }
+
+            return language.Split('-')[0].ToLower();
         }
 
         public string Name

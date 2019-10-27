@@ -105,8 +105,7 @@
                     });
 
                     $selectEl
-                        .html(html)
-                        .selectmenu("refresh");
+                        .html(html);
                 },
 
                 populateInputs: function (userData) {
@@ -114,8 +113,8 @@
 
                     this.$el.find('#username').val(data.Username);
                     this.$el.find('#password').val(data.SessionKey);
-                    this.$el.find('#optionScrobble') .prop('checked', data.Options.Scrobble)      .checkboxradio('refresh');
-                    this.$el.find('#optionFavourite').prop('checked', data.Options.SyncFavourites).checkboxradio('refresh');
+                    this.$el.find('#optionScrobble') .prop('checked', data.Options.Scrobble);
+                    this.$el.find('#optionFavourite').prop('checked', data.Options.SyncFavourites);
                     
                     //Dont forget to call checkboxradio('refresh') otherwise the UI wont update
                 },
@@ -202,8 +201,8 @@
                 getUIOptionsValues: function () {
                     var options = $.extend({}, this.configDefaults.Options);
 
-                    options.Scrobble       = this.$el.find('#optionScrobble') .checked();
-                    options.SyncFavourites = this.$el.find('#optionFavourite').checked();
+                    options.Scrobble = this.$el.find('#optionScrobble')[0].checked;
+                    options.SyncFavourites = this.$el.find('#optionFavourite')[0].checked;
 
                     return options;
                 },
