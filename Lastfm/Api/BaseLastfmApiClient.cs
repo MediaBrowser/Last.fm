@@ -55,7 +55,7 @@
                 {
                     try
                     {
-                        var result = _jsonSerializer.DeserializeFromStream<TResponse>(stream);
+                        var result = await _jsonSerializer.DeserializeFromStreamAsync<TResponse>(stream).ConfigureAwait(false);
 
                         //Lets Log the error here to ensure all errors are logged
                         if (result.IsError())
@@ -89,7 +89,7 @@
             {
                 try
                 {
-                    var result = _jsonSerializer.DeserializeFromStream<TResponse>(stream);
+                    var result = await _jsonSerializer.DeserializeFromStreamAsync<TResponse>(stream).ConfigureAwait(false);
 
                     //Lets Log the error here to ensure all errors are logged
                     if (result.IsError())

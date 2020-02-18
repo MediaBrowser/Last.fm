@@ -6,6 +6,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
+using MediaBrowser.Model.IO;
 using MoreLinq;
 using System;
 using System.Collections.Generic;
@@ -24,13 +25,15 @@ namespace Lastfm.Providers
 
         private readonly IServerConfigurationManager _config;
         private readonly ILogger _logger;
+        private readonly IFileSystem _fileSystem;
 
-        public LastfmAlbumProvider(IHttpClient httpClient, IJsonSerializer json, IServerConfigurationManager config, ILogger logger)
+        public LastfmAlbumProvider(IHttpClient httpClient, IJsonSerializer json, IServerConfigurationManager config, ILogger logger, IFileSystem fileSystem)
         {
             _httpClient = httpClient;
             _json = json;
             _config = config;
             _logger = logger;
+            _fileSystem = fileSystem;
         }
 
         public Task<IEnumerable<RemoteSearchResult>> GetSearchResults(AlbumInfo searchInfo, CancellationToken cancellationToken)
@@ -191,7 +194,7 @@ namespace Lastfm.Providers
 
             if (!string.IsNullOrEmpty(musicBrainzId) && !string.IsNullOrEmpty(url))
             {
-                LastfmHelper.SaveImageInfo(_config.ApplicationPaths, _logger, musicBrainzId, url, imageSize);
+                LastfmHelper.SaveImageInfo(_config.ApplicationPaths, _logger, _fileSystem, musicBrainzId, url, imageSize);
             }
         }
 

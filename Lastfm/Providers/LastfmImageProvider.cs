@@ -5,6 +5,7 @@ using MediaBrowser.Controller.Entities.Audio;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
+using MediaBrowser.Model.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,11 +20,13 @@ namespace Lastfm.Providers
     {
         private readonly IHttpClient _httpClient;
         private readonly IServerConfigurationManager _config;
+        private readonly IFileSystem _fileSystem;
 
-        public LastfmImageProvider(IHttpClient httpClient, IServerConfigurationManager config)
+        public LastfmImageProvider(IHttpClient httpClient, IServerConfigurationManager config, IFileSystem fileSystem)
         {
             _httpClient = httpClient;
             _config = config;
+            _fileSystem = fileSystem;
         }
 
         public string Name
@@ -49,7 +52,7 @@ namespace Lastfm.Providers
             };
         }
 
-        public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, LibraryOptions libraryOptions, CancellationToken cancellationToken)
+        public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, LibraryOptions libraryOptions, CancellationToken cancellationToken)
         {
             var list = new List<RemoteImageInfo>();
 
@@ -65,7 +68,7 @@ namespace Lastfm.Providers
 
                 try
                 {
-                    var parts = File.ReadAllText(cachePath).Split('|');
+                    var parts = (await _fileSystem.ReadAllTextAsync(cachePath).ConfigureAwait(false)).Split('|');
 
                     info = GetInfo(parts.FirstOrDefault(), parts.LastOrDefault());
                 }
@@ -77,7 +80,7 @@ namespace Lastfm.Providers
                 }
             }
 
-            if (info ==  null)
+            if (info == null)
             {
                 var musicBrainzReleaseGroupId = item.GetProviderId(MetadataProviders.MusicBrainzReleaseGroup);
 
@@ -87,7 +90,7 @@ namespace Lastfm.Providers
 
                     try
                     {
-                        var parts = File.ReadAllText(cachePath).Split('|');
+                        var parts = (await _fileSystem.ReadAllTextAsync(cachePath).ConfigureAwait(false)).Split('|');
 
                         info = GetInfo(parts.FirstOrDefault(), parts.LastOrDefault());
                     }
@@ -106,7 +109,7 @@ namespace Lastfm.Providers
             }
 
             // The only info we have is size
-            return Task.FromResult<IEnumerable<RemoteImageInfo>>(list.OrderByDescending(i => i.Width ?? 0));
+            return list.OrderByDescending(i => i.Width ?? 0);
         }
 
         private RemoteImageInfo GetInfo(string url, string size)
@@ -125,7 +128,7 @@ namespace Lastfm.Providers
 
             if (string.Equals(size, "mega", StringComparison.OrdinalIgnoreCase))
             {
-                
+
             }
             else if (string.Equals(size, "extralarge", StringComparison.OrdinalIgnoreCase))
             {

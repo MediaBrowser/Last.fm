@@ -3,6 +3,7 @@ using MediaBrowser.Model.Logging;
 using System;
 using System.IO;
 using System.Linq;
+using MediaBrowser.Model.IO;
 
 namespace Lastfm.Providers
 {
@@ -41,7 +42,7 @@ namespace Lastfm.Providers
             return null;
         }
 
-        public static void SaveImageInfo(IApplicationPaths appPaths, ILogger logger, string musicBrainzId, string url, string size)
+        public static void SaveImageInfo(IApplicationPaths appPaths, ILogger logger, IFileSystem fileSystem, string musicBrainzId, string url, string size)
         {
             if (appPaths == null)
             {
@@ -62,12 +63,12 @@ namespace Lastfm.Providers
             {
                 if (string.IsNullOrEmpty(url))
                 {
-                    File.Delete(cachePath);
+                    fileSystem.DeleteFile(cachePath);
                 }
                 else
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(cachePath));
-                    File.WriteAllText(cachePath, url + "|" + size);
+                    fileSystem.CreateDirectory(fileSystem.GetDirectoryName(cachePath));
+                    fileSystem.WriteAllText(cachePath, url + "|" + size);
                 }
             }
             catch (IOException ex)
