@@ -23,7 +23,7 @@
         // if the length of the song is >= 30 seconds, allow scrobble.
         private const long minimumSongLengthToScrobbleInTicks = 30*TimeSpan.TicksPerSecond;
         // if a song reaches >= 4 minutes  in playtime, allow scrobble.
-        private const long minimumPlayTimeToScrobbleInInTicks = 4*TimeSpan.TicksPerMinute;
+        private const long minimumPlayTimeToScrobbleInTicks = 4*TimeSpan.TicksPerMinute;
         // if a song reaches >= 50% played, allow scrobble.
         private const double minimumPlayPercentage = 50.00;
 
@@ -126,11 +126,11 @@
                 return;
             }
 
-            // the track must have played the minimum percentage (minimumPlayPercentage = 50%) or played for atleast 4 minutes (minimumPlayTimeToScrobbleInInTicks).
+            // the track must have played the minimum percentage (minimumPlayPercentage = 50%) or played for atleast 4 minutes (minimumPlayTimeToScrobbleInTicks).
             var playPercent = ((double)e.PlaybackPositionTicks / item.RunTimeTicks) * 100;
-            if (playPercent < minimumPlayPercentage & e.PlaybackPositionTicks < minimumPlayTimeToScrobbleInInTicks)
+            if (playPercent < minimumPlayPercentage & e.PlaybackPositionTicks < minimumPlayTimeToScrobbleInTicks)
             {
-                Plugin.Logger.Debug("{0} - played {1}%, Last.Fm requires minplayed={2}% . played {3} ticks of minimumPlayTimeToScrobbleInInTicks ({4}), won't scrobble", item.Name, playPercent, minimumPlayPercentage, e.PlaybackPositionTicks, minimumPlayTimeToScrobbleInInTicks);
+                Plugin.Logger.Debug("{0} - played {1}%, Last.Fm requires minplayed={2}% . played {3} ticks of minimumPlayTimeToScrobbleInTicks ({4}), won't scrobble", item.Name, playPercent, minimumPlayPercentage, e.PlaybackPositionTicks, minimumPlayTimeToScrobbleInTicks);
                 return;
             }
 
